@@ -7,9 +7,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Exact match for the soft blue radial background */
             --bg-gradient: radial-gradient(circle at center, #c2e9fb 0%, #a1c4fd 100%);
             --glass: rgba(255, 255, 255, 0.22);
             --glass-border: rgba(255, 255, 255, 0.4);
+            
+            /* Button gradients from your reference photo */
             --btn-play: linear-gradient(180deg, #9b59b6, #8e44ad);
             --btn-daily: linear-gradient(180deg, #2ecc71, #27ae60);
             --btn-multi: linear-gradient(180deg, #e67e22, #d35400);
@@ -43,23 +46,27 @@
             box-shadow: 0 25px 50px rgba(0,0,0,0.1);
         }
 
+        h1 { font-size: 42px; margin: 0 0 20px 0; line-height: 0.9; }
+
+        /* Gallery/Photo Selector */
         .gallery-nav {
             display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px;
         }
-        
-        .nav-arrow { font-size: 30px; cursor: pointer; user-select: none; padding: 10px; }
-        
+        .nav-arrow { font-size: 30px; cursor: pointer; user-select: none; padding: 10px; color: white; }
         #main-preview { 
             width: 180px; height: 120px; border-radius: 20px; 
             object-fit: cover; border: 3px solid white; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
         .menu-btn {
             width: 100%; height: 55px; margin: 10px 0;
             border-radius: 30px; border: none;
             color: white; font-weight: 700; font-size: 16px;
-            cursor: pointer;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.1s;
         }
+        .menu-btn:active { transform: scale(0.95); }
 
         .play { background: var(--btn-play); }
         .daily { background: var(--btn-daily); }
@@ -75,46 +82,52 @@
             position: fixed; bottom: 0; width: 100%; height: 80px;
             background: rgba(255,255,255,0.15); backdrop-filter: blur(20px);
             display: flex; justify-content: space-around; align-items: center;
-            color: white; font-size: 11px;
+            color: white; font-size: 11px; font-weight: bold;
         }
     </style>
 </head>
 <body>
 
+    <!-- SCREEN 1: MENU WITH PHOTO SELECTOR -->
     <div id="screen-menu" class="screen">
         <div class="glass-panel">
             <h1>Calm<br>Pieces+</h1>
+            
             <div class="gallery-nav">
                 <div class="nav-arrow" onclick="changeImage(-1)">◀</div>
                 <img id="main-preview" src="puzzle_image.jpg">
                 <div class="nav-arrow" onclick="changeImage(1)">▶</div>
             </div>
+
             <button class="menu-btn play" onclick="showScreen('screen-diff')">PLAY</button>
             <button class="menu-btn daily" onclick="showScreen('screen-daily')">DAILY CHALLENGE</button>
             <button class="menu-btn multi" onclick="showScreen('screen-multi')">MULTIPLAYER</button>
         </div>
     </div>
 
+    <!-- SCREEN 2: DAILY CHALLENGE -->
     <div id="screen-daily" class="screen hidden">
         <div class="glass-panel">
             <h2>Daily Task</h2>
             <p>New challenge in 10:24:36</p>
-            <button class="menu-btn daily" onclick="startGame(15, 10)">START</button>
+            <button class="menu-btn daily" onclick="startGame(12, 8)">START TASK</button>
             <button class="menu-btn" style="background:rgba(255,255,255,0.1)" onclick="showScreen('screen-menu')">BACK</button>
         </div>
     </div>
 
+    <!-- SCREEN 3: MULTIPLAYER SEARCH -->
     <div id="screen-multi" class="screen hidden">
         <div class="glass-panel">
             <h2>Searching...</h2>
-            <p id="search-text">Finding opponent</p>
+            <p id="search-text">Finding an opponent online</p>
             <button class="menu-btn multi" onclick="showScreen('screen-menu')">CANCEL</button>
         </div>
     </div>
 
+    <!-- SCREEN 4: DIFFICULTY SELECTION -->
     <div id="screen-diff" class="screen hidden">
         <div class="glass-panel">
-            <h2>Select Pieces</h2>
+            <h2>Select Size</h2>
             <button class="menu-btn daily" onclick="startGame(4, 3)">12 PIECES</button>
             <button class="menu-btn play" onclick="startGame(10, 10)">100 PIECES</button>
             <button class="menu-btn multi" onclick="startGame(20, 15)">300 PIECES</button>
@@ -122,17 +135,22 @@
         </div>
     </div>
 
+    <!-- SCREEN 5: GAMEPLAY CANVAS -->
     <div id="screen-game" class="screen hidden">
         <div id="canvas-container"><canvas id="puzzleCanvas"></canvas></div>
-        <button class="menu-btn" style="width:150px; background:rgba(0,0,0,0.3); margin-top:20px;" onclick="location.reload()">QUIT</button>
+        <button class="menu-btn" style="width:150px; background:rgba(0,0,0,0.3); margin-top:20px;" onclick="location.reload()">QUIT GAME</button>
     </div>
 
+    <!-- BOTTOM NAV BAR -->
     <div class="bottom-nav">
-        <span>🎵 MUSIC</span><span>🧩 PUZZLES</span><span>🎁 REWARDS</span><span>⚙️ SETTINGS</span>
+        <span>🎵 MUSIC</span>
+        <span>🧩 PUZZLES</span>
+        <span>🎁 REWARDS</span>
+        <span>⚙️ SETTINGS</span>
     </div>
 
     <script>
-        // Updated Image List with standard .jpg extensions
+        // --- 6 PHOTO OPTIONS ---
         const puzzleList = [
             'puzzle_image.jpg', 
             'puzzle2.jpg', 
@@ -150,27 +168,30 @@
 
         let pieces = [], grabbed = null, cols, rows, pW, pH;
 
+        // Change photo in the gallery
         function changeImage(dir) {
             currentIdx = (currentIdx + dir + puzzleList.length) % puzzleList.length;
             img.src = puzzleList[currentIdx];
             document.getElementById('main-preview').src = img.src;
         }
 
+        // Screen navigation
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             if(id === 'screen-multi') {
                 setTimeout(() => {
-                    document.getElementById('search-text').innerText = "Match Found!";
+                    document.getElementById('search-text').innerText = "Opponent Found!";
                     setTimeout(() => startGame(8, 6), 1000);
-                }, 2000);
+                }, 2500);
             }
         }
 
+        // Initialize Puzzle
         function startGame(c, r) {
             cols = c; rows = r;
             canvas.width = window.innerWidth * 0.85;
-            canvas.height = window.innerHeight * 0.5;
+            canvas.height = window.innerHeight * 0.55;
             pW = canvas.width / cols; pH = canvas.height / rows;
             showScreen('screen-game');
             createPieces();
@@ -195,10 +216,14 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             pieces.forEach(p => {
                 ctx.drawImage(img, p.sx, p.sy, p.sw, p.sh, p.x, p.y, pW, pH);
-                if(!p.snapped) { ctx.strokeStyle = "rgba(255,255,255,0.3)"; ctx.strokeRect(p.x, p.y, pW, pH); }
+                if(!p.snapped) { 
+                    ctx.strokeStyle = "rgba(255,255,255,0.3)"; 
+                    ctx.strokeRect(p.x, p.y, pW, pH); 
+                }
             });
         }
 
+        // Interaction logic
         canvas.ontouchstart = (e) => {
             const rect = canvas.getBoundingClientRect();
             const mx = e.touches[0].clientX - rect.left;
