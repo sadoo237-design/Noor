@@ -97,7 +97,17 @@
                 <div class="nav-arrow" onclick="changeImage(-1)">◀</div>
                 <img id="main-preview" src="puzzle_image.jpg">
                 <div class="nav-arrow" onclick="changeImage(1)">▶</div>
-            </div>
+                <!-- PASTE THE NEW CODE RIGHT HERE -->
+        <input type="file" id="photo-upload" accept="image/*" style="display:none">
+        <button class="menu-btn" style="background: #3498db; margin-bottom: 10px;" onclick="document.getElementById('photo-upload').click()">
+            UPLOAD MY PHOTO
+        </button>
+        <!-- END OF NEW CODE -->
+
+        <button class="menu-btn play" onclick="showScreen('screen-diff')">PLAY</button>
+        <button class="menu-btn daily" onclick="showScreen('screen-daily')">DAILY CHALLENGE</button>
+    </div>
+</div
 
             <button class="menu-btn play" onclick="showScreen('screen-diff')">PLAY</button>
             <button class="menu-btn daily" onclick="showScreen('screen-daily')">DAILY CHALLENGE</button>
@@ -151,6 +161,16 @@
     </div>
 
     <script>
+       document.getElementById('photo-upload').onchange = function(e) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        // This updates the internal game image to your uploaded one
+        img.src = event.target.result; 
+        // This updates the little preview window on the menu
+        document.getElementById('main-preview').src = event.target.result; 
+    };
+    reader.readAsDataURL(e.target.files[0]);
+}; 
         // --- 6 PHOTO OPTIONS ---
         const puzzleList = [
             'puzzle_image.jpg', 
