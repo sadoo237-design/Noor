@@ -124,13 +124,14 @@
         </div>
     </div>
 
-    <!-- SCREEN 4: DIFFICULTY SELECTION -->
+    <!-- DIFFICULTY SCREEN (UPDATED PIECE COUNTS) -->
     <div id="screen-diff" class="screen hidden">
         <div class="glass-panel">
-            <h2>Select Size</h2>
-            <button class="menu-btn daily" onclick="startGame(4, 3)">12 PIECES</button>
-            <button class="menu-btn play" onclick="startGame(10, 10)">100 PIECES</button>
-            <button class="menu-btn multi" onclick="startGame(20, 15)">300 PIECES</button>
+            <h2 style="margin-bottom: 20px;">Select Difficulty</h2>
+            <button class="menu-btn daily" onclick="startGame(10, 5)">50 PIECES (EASY)</button>
+            <button class="menu-btn play" onclick="startGame(10, 10)">100 PIECES (MEDIUM)</button>
+            <button class="menu-btn multi" onclick="startGame(20, 10)">200 PIECES (HARD)</button>
+            <button class="menu-btn extreme" onclick="startGame(20, 20)">400 PIECES (EXPERT)</button>
             <button class="menu-btn" style="background:rgba(255,255,255,0.1)" onclick="showScreen('screen-menu')">BACK</button>
         </div>
     </div>
